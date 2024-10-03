@@ -1,7 +1,7 @@
 #version 300 es
 
-in vec4 a_position;
+in uint index;
 
 void main() {
-    gl_Position = a_position;
+    gl_Position = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 }
