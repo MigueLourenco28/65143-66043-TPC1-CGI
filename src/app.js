@@ -54,6 +54,9 @@ function setup(shaders) {
 
     // Handle mouse down events
     window.addEventListener("mousedown", (event) => {
+        const pos = get_pos_from_mouse_event(canvas, event);
+        // Print the mouses input position
+        console.log(`Mouse down at position: (${pos[0]}, ${pos[1]})`);
     });
 
     // Handle mouse move events
@@ -62,6 +65,9 @@ function setup(shaders) {
 
     // Handle mouse up events
     window.addEventListener("mouseup", (event) => {
+        const pos = get_pos_from_mouse_event(canvas, event);
+        // Print the mouses input position
+        console.log(`Mouse up at position: (${pos[0]}, ${pos[1]})`);
     });
 
     resize(window);

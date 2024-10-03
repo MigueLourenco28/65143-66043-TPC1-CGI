@@ -1,6 +1,5 @@
 # 65143-66043-TPC1-CGI
 
-
 ### 1. Tarefas a executar
 
 Comece por atualizar a sua cópia local do repositório de CGI. Nela vai encontrar uma pasta com o código de partida para a realização do projeto, localizada em:
@@ -20,3 +19,6 @@ Tarefas:
 7. Modifique o seu programa (app.js) para criar de início um buffer com 60000 entradas e cujo conteúdo deverá ser inicializado com um índice inteiro a começar em 0 e a terminar em 59999. Se os valores estiverem previamente num array javascript com o nome `xpto`, o buffer pode ser inicializado da seguinte forma: `gl.bufferData(gl.ARRAY_BUFFER, new Uint32Array(xpto), gl.STATIC_DRAW)`
 8. Mude o progama (app.js) para mandar desenhar S * (P-1) + 1 pontos, onde S é o número de segmentos e P o numero de pontos introduzidos até ao momento (e guardados num array).
 9. Mude o vertex shader para calcular uma posição adequada entre um par de pontos apropriado (tudo calculado a partir do índice do ponto a desenhar, do número de segmentos e do conjunto de pontos de controlo).
+10. TAREFA EXTRA:
+    1. "zombie mode"
+    2. Todas as curvas criadas são brancas, mas no zombie mode a curva criada passa a vermelho e se tocar noutra curva essa curva, se for branca, passa a vermelho;
