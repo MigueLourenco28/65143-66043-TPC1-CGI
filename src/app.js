@@ -43,7 +43,6 @@ function setup(shaders) {
         resize(event.target);
     });
 
-
     function get_pos_from_mouse_event(canvas, event) {
         const rect = canvas.getBoundingClientRect();
         const x = (event.clientX - rect.left) / canvas.width * 2 - 1;
@@ -52,22 +51,35 @@ function setup(shaders) {
         return vec2(x, y);
     }
 
+    // Save the coordinates of the mouse down point
+    const v_start = null;
     // Handle mouse down events
     window.addEventListener("mousedown", (event) => {
-        const pos = get_pos_from_mouse_event(canvas, event);
+        const p1 = get_pos_from_mouse_event(canvas, event);
         // Print the mouses input position
-        console.log(`Mouse down at position: (${pos[0]}, ${pos[1]})`);
+        console.log(`Mouse down at position: (${p1[0]}, ${p1[1]})`);
     });
 
+    // True if the mouse moved
+    var movement = false;
     // Handle mouse move events
     window.addEventListener("mousemove", (event) => {
+        movement = true;
     });
 
+    // Check if the mouse moved
+    if(movement)
+        console.log("Mouse moved")
+    else 
+        console.log("Mouse not moved");
+
+    // Save the coordinates of the mouse up point
+    const v_finish = null;
     // Handle mouse up events
     window.addEventListener("mouseup", (event) => {
-        const pos = get_pos_from_mouse_event(canvas, event);
+        const p2 = get_pos_from_mouse_event(canvas, event);
         // Print the mouses input position
-        console.log(`Mouse up at position: (${pos[0]}, ${pos[1]})`);
+        console.log(`Mouse up at position: (${p2[0]}, ${p2[1]})`);
     });
 
     resize(window);
