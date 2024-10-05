@@ -60,11 +60,9 @@ function setup(shaders) {
         console.log(`Mouse down at position: (${v_start[0]}, ${v_start[1]})`);
     });
 
-    // True if the mouse moved
-    var movement = false;
-    // Handle mouse move events
+    // Handle mouse move events and prints if its triggered
     window.addEventListener("mousemove", (event) => {
-        movement = true;
+        console.log("Mouse moved");
     });
 
     // Save the coordinates of the mouse up point
@@ -74,11 +72,6 @@ function setup(shaders) {
         v_finish = get_pos_from_mouse_event(canvas, event);
         // Print the mouses input position
         console.log(`Mouse up at position: (${v_finish[0]}, ${v_finish[1]})`);
-        // Check if the mouse moved
-        if(v_start[0] == v_finish[0] && v_start[1] == v_finish[1])
-            console.log("Mouse not moved")
-        else 
-            console.log("Mouse moved");
     });
 
     resize(window);
@@ -112,5 +105,7 @@ function animate(timestamp) {
 
     last_time = timestamp;
 }
+// Delay the animation so that the movement of the mouse draws dots spaced out
+setInterval(animate, 100);
 
 loadShadersFromURLS(["shader.vert", "shader.frag"]).then(shaders => setup(shaders))
