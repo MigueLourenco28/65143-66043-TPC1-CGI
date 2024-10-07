@@ -55,15 +55,63 @@ function setup(shaders) {
         return vec2(x, y);
     }
 
+    // Command interpreter for every function available
+    window.addEventListener("keydown", (event) => {
+        switch (event.key) {
+            case "z":
+                // TODO: Implement the complete curve command
+                console.log("z key pressed");
+                break;
+            case "c":
+                // TODO: Implement the clear command
+                console.log("c key pressed");
+                break;
+            case "+":
+                // TODO: Implement the increase segments command
+                console.log("+ key pressed");
+                break;
+            case "-":
+                // TODO: Implement the lower segments command
+                console.log("- key pressed");
+                break;
+            case ">":
+                // TODO: Implement  speed up command
+                console.log("> key pressed");
+                break;
+            case "<":
+                // TODO: Implement slow down command
+                console.log("< key pressed");
+                break;
+            case " ":
+                // TODO: Implement the pause/play command
+                console.log("space key pressed");
+                break;
+            case "p":
+                // TODO: Implement the show/hide control points command
+                console.log("p key pressed");
+                break;
+            case "l":
+                // TODO: Implement the show/hide curves command
+                console.log("l key pressed");
+                break;
+            case "r":
+                // TODO: Implement the resize browser window command
+                console.log("r key pressed");
+                break;
+            default:
+                break;
+        }
+    });
+
     // Task 4: Save the coordinates of the mouse when the user clicks with it
-    const vertices = [];
+    const controlPoints = [];
 
     // Task 4: Save the coordinates of the mouse down point
     var v_start;
     // Task 4: Handle mouse down events
     window.addEventListener("mousedown", (event) => {
         v_start = get_pos_from_mouse_event(canvas, event);
-        vertices.push(v_start);
+        controlPoints.push(v_start);
         // Print the mouses input position
         console.log(`Mouse down at position: (${v_start[0]}, ${v_start[1]})`);
     });
