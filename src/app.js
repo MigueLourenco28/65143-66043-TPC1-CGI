@@ -38,7 +38,11 @@ function setup(shaders) {
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-    // Handle resize events 
+    // Handle resize events
+    /**
+     * Task 2
+     * TODO: What does the resize() do?
+     */
     window.addEventListener("resize", (event) => {
         resize(event.target);
     });
@@ -51,11 +55,15 @@ function setup(shaders) {
         return vec2(x, y);
     }
 
-    // Save the coordinates of the mouse down point
+    // Task 4: Save the coordinates of the mouse when the user clicks with it
+    const vertices = [];
+
+    // Task 4: Save the coordinates of the mouse down point
     var v_start;
-    // Handle mouse down events
+    // Task 4: Handle mouse down events
     window.addEventListener("mousedown", (event) => {
         v_start = get_pos_from_mouse_event(canvas, event);
+        vertices.push(v_start);
         // Print the mouses input position
         console.log(`Mouse down at position: (${v_start[0]}, ${v_start[1]})`);
     });
@@ -63,6 +71,7 @@ function setup(shaders) {
     // Handle mouse move events and prints if its triggered
     window.addEventListener("mousemove", (event) => {
         console.log("Mouse moved");
+        // TODO: mark the coordinates of the point per frame that the mouse is in
     });
 
     // Save the coordinates of the mouse up point
@@ -74,6 +83,9 @@ function setup(shaders) {
         console.log(`Mouse up at position: (${v_finish[0]}, ${v_finish[1]})`);
     });
 
+    /**
+     * TODO: if the user presses the key "Z" on the keyboard
+    */
     resize(window);
 
     gl.clearColor(0.0, 0.0, 0.0, 1);
