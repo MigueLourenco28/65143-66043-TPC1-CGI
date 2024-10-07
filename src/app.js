@@ -55,11 +55,14 @@ function setup(shaders) {
         return vec2(x, y);
     }
 
+    // Save the amount of segments that a simple curve has
+    let nSegments = 6;
+
     // Command interpreter for every function available
     window.addEventListener("keydown", (event) => {
         switch (event.key) {
             case "z":
-                // TODO: Implement the complete curve command
+                // TODO: Implement the complete curve command: empty the controlPoints array
                 console.log("z key pressed");
                 break;
             case "c":
@@ -68,10 +71,14 @@ function setup(shaders) {
                 break;
             case "+":
                 // TODO: Implement the increase segments command
+                nSegments++;
+                console.log(nSegments + " segments");
                 console.log("+ key pressed");
                 break;
             case "-":
                 // TODO: Implement the lower segments command
+                nSegments--;
+                console.log(nSegments + " segments")
                 console.log("- key pressed");
                 break;
             case ">":
