@@ -7,6 +7,9 @@ var aspect;
 
 var draw_program;
 
+// Tarefa 7
+const xpto = Array.from({ length: 60000 }, (_, i) => i);
+
 // Task 4: Save the coordinates of the mouse when the user clicks with it
 const controlPoints = [];
 
@@ -107,6 +110,7 @@ function setup(shaders) {
                 break;
             case "r":
                 // TODO: Implement the resize browser window command
+                resize(event.target);
                 console.log("r key pressed");
                 break;
             case "x":
@@ -120,8 +124,10 @@ function setup(shaders) {
 
     // Task 4: Save the coordinates of the mouse down point
     var v_start;
+    let mouseDown;
     // Task 4: Handle mouse down events
     window.addEventListener("mousedown", (event) => {
+        mouseDown = true;
         v_start = get_pos_from_mouse_event(canvas, event);
         controlPoints.push(v_start);
         // Print the mouses input position
@@ -130,7 +136,8 @@ function setup(shaders) {
 
     // Handle mouse move events and prints if its triggered
     window.addEventListener("mousemove", (event) => {
-        console.log("Mouse moved");
+        if(mouseDown)    
+            console.log("Mouse moved");
         // TODO: mark the coordinates of the point per frame that the mouse is in
     });
 
@@ -138,10 +145,16 @@ function setup(shaders) {
     var v_finish;
     // Handle mouse up events
     window.addEventListener("mouseup", (event) => {
+        mouseDown = false;
         v_finish = get_pos_from_mouse_event(canvas, event);
         // Print the mouses input position
         console.log(`Mouse up at position: (${v_finish[0]}, ${v_finish[1]})`);
     });
+
+    // Tarefa 7
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Uint32Array(xpto), gl.STATIC_DRAW);
 
     /**
      * TODO: if the user presses the key "Z" on the keyboard
