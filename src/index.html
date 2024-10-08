@@ -26,6 +26,14 @@
             z-index: 2;
         }
 
+        .zombie-mode {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            color: red;
+            z-index: 3;
+        }
+
         /* Optional: make text more visible */
         h1 {
             background-color: rgba(0, 0, 0, 0.5);
@@ -52,6 +60,9 @@
             <h1>l : Hide/Show curves</h1>
             <h1>r : Resize window</h1>
             <h1>z : Finish control points</h1>
+        </div>
+        <div class="zombie-mode">
+            <h1>----x : Zombie Mode-----</h1>
         </div>
     </div>
     <script type="module" src="./app.js"></script>

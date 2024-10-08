@@ -7,6 +7,8 @@ var aspect;
 
 var draw_program;
 
+// Task 4: Save the coordinates of the mouse when the user clicks with it
+const controlPoints = [];
 
 /**
  * Resize event handler
@@ -63,10 +65,12 @@ function setup(shaders) {
         switch (event.key) {
             case "z":
                 // TODO: Implement the complete curve command: empty the controlPoints array
+                controlPoints.length = 0;
                 console.log("z key pressed");
                 break;
             case "c":
                 // TODO: Implement the clear command
+                controlPoints.length = 0;
                 console.log("c key pressed");
                 break;
             case "+":
@@ -105,13 +109,14 @@ function setup(shaders) {
                 // TODO: Implement the resize browser window command
                 console.log("r key pressed");
                 break;
+            case "x":
+                //TODO: Implement the bonus command combie mode
+                console.log("x key pressed");
+                break;
             default:
                 break;
         }
     });
-
-    // Task 4: Save the coordinates of the mouse when the user clicks with it
-    const controlPoints = [];
 
     // Task 4: Save the coordinates of the mouse down point
     var v_start;
