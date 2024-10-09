@@ -151,18 +151,18 @@ function setup(shaders) {
     var v_finish;
     // Handle mouse up events
     window.addEventListener("mouseup", (event) => {
-        if(mouseDown && !moved)
+        if(mouseDown && !moved) // If the mouse was pressed down but didn't move then we have a control point
             controlPoints.push(v_start);
-        else {
+        else { // Else we have a free curve being drawn and v_finish is the last sampling point
             v_finish = get_pos_from_mouse_event(canvas, event);
-            // Print the mouses input position
+            // Print the mouseup input position
             console.log(`Mouse up at position: (${v_finish[0]}, ${v_finish[1]})`);
         }
         mouseDown = false;
         moved = false;
     });
 
-    // Tarefa 7
+    // Task 7
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Uint32Array(xpto), gl.STATIC_DRAW);
