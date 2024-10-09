@@ -63,6 +63,8 @@ function setup(shaders) {
     // Save the amount of segments that a simple curve has
     let nSegments = 6;
 
+    let defSpeed = 2;
+
     // Command interpreter for every function available
     window.addEventListener("keydown", (event) => {
         switch (event.key) {
@@ -124,20 +126,23 @@ function setup(shaders) {
 
     // Task 4: Save the coordinates of the mouse down point
     var v_start;
-    let mouseDown;
+    let mouseDown = false;
+    let moved = false;
     // Task 4: Handle mouse down events
     window.addEventListener("mousedown", (event) => {
         mouseDown = true;
         v_start = get_pos_from_mouse_event(canvas, event);
-        controlPoints.push(v_start);
         // Print the mouses input position
         console.log(`Mouse down at position: (${v_start[0]}, ${v_start[1]})`);
     });
 
     // Handle mouse move events and prints if its triggered
     window.addEventListener("mousemove", (event) => {
-        if(mouseDown)    
+        if(mouseDown) {
+            moved = true;  
+            // Draw a free curve until mouseup event
             console.log("Mouse moved");
+        }
         // TODO: mark the coordinates of the point per frame that the mouse is in
     });
 
@@ -145,10 +150,15 @@ function setup(shaders) {
     var v_finish;
     // Handle mouse up events
     window.addEventListener("mouseup", (event) => {
+        if(mouseDown && !moved)
+            controlPoints.push(v_start);
+        else {
+            v_finish = get_pos_from_mouse_event(canvas, event);
+            // Print the mouses input position
+            console.log(`Mouse up at position: (${v_finish[0]}, ${v_finish[1]})`);
+        }
         mouseDown = false;
-        v_finish = get_pos_from_mouse_event(canvas, event);
-        // Print the mouses input position
-        console.log(`Mouse up at position: (${v_finish[0]}, ${v_finish[1]})`);
+        moved = false;
     });
 
     // Tarefa 7
