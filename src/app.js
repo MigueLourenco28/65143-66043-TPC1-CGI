@@ -7,11 +7,8 @@ var aspect;
 
 var draw_program;
 
-// Tarefa 7
+// Tarefa 7 : array that stores the control points
 const xpto = Array.from({ length: 60000 }, (_, i) => i);
-
-// Task 4: Save the coordinates of the mouse when the user clicks with it
-const controlPoints = [];
 
 /**
  * Resize event handler
@@ -38,19 +35,18 @@ function setup(shaders) {
     // Create WebGL programs
     draw_program = buildProgramFromSources(gl, shaders["shader.vert"], shaders["shader.frag"]);
 
+    // Store vertices (control points) to be dsent to the GLSL program draw_program
+    // const controlPoints = [];
+
+    // Task 7 : Create buffer
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Uint32Array(xpto), gl.STATIC_DRAW);
 
     // Enable Alpha blending
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-    // Handle resize events
-    /**
-     * Task 2
-     * TODO: What does the resize() do?
-     */
-    window.addEventListener("resize", (event) => {
-        resize(event.target);
-    });
 
     function get_pos_from_mouse_event(canvas, event) {
         const rect = canvas.getBoundingClientRect();
@@ -60,9 +56,10 @@ function setup(shaders) {
         return vec2(x, y);
     }
 
-    // Save the amount of segments that a simple curve has
+    // Save the default amount of segments that a simple curve has
     let nSegments = 6;
 
+    // Save the default speed of the curve
     let defSpeed = 2;
 
     // Command interpreter for every function available
@@ -70,12 +67,12 @@ function setup(shaders) {
         switch (event.key) {
             case "z":
                 // TODO: Implement the complete curve command: empty the controlPoints array
-                controlPoints.length = 0;
+                xpto.length = 0;
                 console.log("z key pressed");
                 break;
             case "c":
                 // TODO: Implement the clear command
-                controlPoints.length = 0;
+                xpto.length = 0;
                 console.log("c key pressed");
                 break;
             case "+":
@@ -92,7 +89,7 @@ function setup(shaders) {
                 console.log("- key pressed");
                 break;
             case ">":
-                // TODO: Implement  speed up command
+                // TODO: Implement speed up command
                 console.log("> key pressed");
                 break;
             case "<":
@@ -112,7 +109,7 @@ function setup(shaders) {
                 console.log("l key pressed");
                 break;
             case "r":
-                // TODO: Implement the resize browser window command
+                // Task 2
                 resize(event.target);
                 console.log("r key pressed");
                 break;
@@ -151,9 +148,11 @@ function setup(shaders) {
     var v_finish;
     // Handle mouse up events
     window.addEventListener("mouseup", (event) => {
-        if(mouseDown && !moved) // If the mouse was pressed down but didn't move then we have a control point
-            controlPoints.push(v_start);
-        else { // Else we have a free curve being drawn and v_finish is the last sampling point
+        if(mouseDown && !moved) { // If the mouse was pressed down but didn't move then we have a control point
+            // Send control point to vertex shader
+            xpto.push(v_start);
+            console.log("Sending control points...");
+        } else { // Else we have a free curve being drawn and v_finish is the last sampling point
             v_finish = get_pos_from_mouse_event(canvas, event);
             // Print the mouseup input position
             console.log(`Mouse up at position: (${v_finish[0]}, ${v_finish[1]})`);
@@ -161,11 +160,6 @@ function setup(shaders) {
         mouseDown = false;
         moved = false;
     });
-
-    // Task 7
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Uint32Array(xpto), gl.STATIC_DRAW);
 
     /**
      * TODO: if the user presses the key "Z" on the keyboard
