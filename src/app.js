@@ -117,7 +117,7 @@ function setup(shaders) {
                 console.log("r key pressed");
                 break;
             case "x":
-                //TODO: Implement the bonus command combie mode
+                //TODO: Implement the bonus command zombie mode
                 console.log("x key pressed");
                 break;
             default:
