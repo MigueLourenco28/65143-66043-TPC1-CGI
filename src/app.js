@@ -86,7 +86,8 @@ function setup(shaders) {
                 break;
             case "-":
                 // TODO: Implement the lower segments command
-                nSegments--;
+                if(nSegments > 1)
+                    nSegments--;
                 console.log(nSegments + " segments")
                 console.log("- key pressed");
                 break;
@@ -191,6 +192,24 @@ function animate(timestamp) {
     // Elapsed time (in miliseconds) since last time here
     const elapsed = timestamp - last_time;
 
+    /**
+    // Draw the curve with control points if there are enough
+    if (controlPoints.length >= 4) {
+        let numPoints = nSegments * (controlPoints.length - 3) + 1;
+        if (numPoints > xpto.length) {
+            numPoints = xpto.length;
+        }
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.vertexAttribIPointer(indexLoc, 1, gl.UNSIGNED_INT, 0, 0);
+        gl.enableVertexAttribArray(indexLoc);
+
+        // Desenhar os pontos
+        gl.drawArrays(gl.POINTS, 0, numPoints);
+
+        gl.disableVertexAttribArray(indexLoc);
+    }
+    */
 
     gl.clear(gl.COLOR_BUFFER_BIT);
 
