@@ -38,6 +38,8 @@ function setup(shaders) {
     // Store vertices (control points) to be dsent to the GLSL program draw_program
     // const controlPoints = [];
 
+    // TODO: find a way to send the default ammount of segments
+
     // Task 7 : Create buffer
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -47,6 +49,15 @@ function setup(shaders) {
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
+    // Handle resize events 
+    window.addEventListener("resize", (event) => {
+        resize(event.target);
+    });
+
+    // Create a vertex array object to tell the GPU how to fetch vertex
+    // data from the buffers, and make it current
+    vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
 
     function get_pos_from_mouse_event(canvas, event) {
         const rect = canvas.getBoundingClientRect();
@@ -67,7 +78,7 @@ function setup(shaders) {
         switch (event.key) {
             case "z":
                 // TODO: Implement the complete curve command: empty the controlPoints array
-                xpto.length = 0;
+                // 
                 console.log("z key pressed");
                 break;
             case "c":
@@ -108,11 +119,11 @@ function setup(shaders) {
                 // TODO: Implement the show/hide curves command
                 console.log("l key pressed");
                 break;
-            case "r":
+            //case "r":
                 // Task 2
-                resize(event.target);
-                console.log("r key pressed");
-                break;
+                //resize(event.target);
+                //console.log("r key pressed");
+                //break;
             case "x":
                 //TODO: Implement the bonus command zombie mode
                 console.log("x key pressed");
@@ -137,7 +148,8 @@ function setup(shaders) {
     // Handle mouse move events and prints if its triggered
     window.addEventListener("mousemove", (event) => {
         if(mouseDown) {
-            moved = true;  
+            moved = true;
+            xpto.push(get_pos_from_mouse_event(canvas, event));
             // Draw a free curve until mouseup event
             console.log("Mouse moved");
         }
@@ -154,6 +166,10 @@ function setup(shaders) {
             console.log("Sending control points...");
         } else { // Else we have a free curve being drawn and v_finish is the last sampling point
             v_finish = get_pos_from_mouse_event(canvas, event);
+            xpto.push(get_pos_from_mouse_event(canvas, event));
+            
+            // 
+
             // Print the mouseup input position
             console.log(`Mouse up at position: (${v_finish[0]}, ${v_finish[1]})`);
         }
@@ -161,9 +177,6 @@ function setup(shaders) {
         moved = false;
     });
 
-    /**
-     * TODO: if the user presses the key "Z" on the keyboard
-    */
     resize(window);
 
     gl.clearColor(0.0, 0.0, 0.0, 1);
@@ -186,28 +199,14 @@ function animate(timestamp) {
     // Elapsed time (in miliseconds) since last time here
     const elapsed = timestamp - last_time;
 
-    /**
-    // Draw the curve with control points if there are enough
-    if (controlPoints.length >= 4) {
-        let numPoints = nSegments * (controlPoints.length - 3) + 1;
-        if (numPoints > xpto.length) {
-            numPoints = xpto.length;
-        }
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.vertexAttribIPointer(indexLoc, 1, gl.UNSIGNED_INT, 0, 0);
-        gl.enableVertexAttribArray(indexLoc);
-
-        // Desenhar os pontos
-        gl.drawArrays(gl.POINTS, 0, numPoints);
-
-        gl.disableVertexAttribArray(indexLoc);
-    }
-    */
-
+    // Clear the framebuffer with the background color
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     gl.useProgram(draw_program);
+
+    gl.bindVertexArray(vao);
+
+    gl.drawArrays(gl.Points, 0, numPoints);
 
     gl.useProgram(null);
 
