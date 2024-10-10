@@ -1,5 +1,9 @@
 import { buildProgramFromSources, loadShadersFromURLS, setupWebGL } from "../../libs/utils.js";
-import { vec2 } from "../../libs/MV.js";
+import { vec2 , flatten} from "../../libs/MV.js";
+
+// Size of xpto
+const BUFF_SIZE = 60000;
+
 
 var gl;
 var canvas;
@@ -7,8 +11,28 @@ var aspect;
 
 var draw_program;
 
-// Tarefa 7 : array that stores the control points
-const xpto = Array.from({ length: 60000 }, (_, i) => i);
+// Saves the truth value of the curves being stationary 
+var paused = false;
+
+// Save the default amount of segments that a simple curve has
+var nSegments = 6.0;
+
+// Save the default speed of the curve
+var defSpeed = 2.0;
+
+// Stores every curves that has been drawn
+const completeCurves = [];
+// Array that stores the control points of a curve
+var controlPoints = [];
+// Array that stores the points of a curve (sample points)
+var curvePoints = [];
+// Task 7 : Array of indexes of the control points of a curve
+var xpto = new Uint32Array(BUFF_SIZE);
+
+// Task 7 : Initialize xpto
+for (var i = 0; i < BUFF_SIZE; i++) {
+    xpto[i] = i;
+}
 
 /**
  * Resize event handler
@@ -35,29 +59,23 @@ function setup(shaders) {
     // Create WebGL programs
     draw_program = buildProgramFromSources(gl, shaders["shader.vert"], shaders["shader.frag"]);
 
-    // Store vertices (control points) to be dsent to the GLSL program draw_program
-    // const controlPoints = [];
-
-    // TODO: find a way to send the default ammount of segments
+    // Enable Alpha blending
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
     // Task 7 : Create buffer
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Uint32Array(xpto), gl.STATIC_DRAW);
 
-    // Enable Alpha blending
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
     // Handle resize events 
     window.addEventListener("resize", (event) => {
         resize(event.target);
     });
 
-    // Create a vertex array object to tell the GPU how to fetch vertex
-    // data from the buffers, and make it current
-    vao = gl.createVertexArray();
-    gl.bindVertexArray(vao);
+    // Get the attribute location for "a_index" attribute
+    const a_index = gl.getAttribLocation(draw_program, "a_index");
+    // Get the attribute location for "
 
     function get_pos_from_mouse_event(canvas, event) {
         const rect = canvas.getBoundingClientRect();
@@ -66,12 +84,6 @@ function setup(shaders) {
 
         return vec2(x, y);
     }
-
-    // Save the default amount of segments that a simple curve has
-    let nSegments = 6;
-
-    // Save the default speed of the curve
-    let defSpeed = 2;
 
     // Command interpreter for every function available
     window.addEventListener("keydown", (event) => {
@@ -88,7 +100,8 @@ function setup(shaders) {
                 break;
             case "+":
                 // TODO: Implement the increase segments command
-                nSegments++;
+                if (nSegments < 100)    
+                    nSegments++;
                 console.log(nSegments + " segments");
                 console.log("+ key pressed");
                 break;
@@ -109,6 +122,10 @@ function setup(shaders) {
                 break;
             case " ":
                 // TODO: Implement the pause/play command
+                if(paused)
+                    paused = false;
+                else
+                    paused = true;
                 console.log("space key pressed");
                 break;
             case "p":
@@ -119,11 +136,7 @@ function setup(shaders) {
                 // TODO: Implement the show/hide curves command
                 console.log("l key pressed");
                 break;
-            //case "r":
-                // Task 2
-                //resize(event.target);
-                //console.log("r key pressed");
-                //break;
+            // TODO: Implement the curve modes
             case "x":
                 //TODO: Implement the bonus command zombie mode
                 console.log("x key pressed");
@@ -149,7 +162,7 @@ function setup(shaders) {
     window.addEventListener("mousemove", (event) => {
         if(mouseDown) {
             moved = true;
-            xpto.push(get_pos_from_mouse_event(canvas, event));
+            controlPoints.push(get_pos_from_mouse_event(canvas, event));
             // Draw a free curve until mouseup event
             console.log("Mouse moved");
         }
@@ -161,29 +174,29 @@ function setup(shaders) {
     // Handle mouse up events
     window.addEventListener("mouseup", (event) => {
         if(mouseDown && !moved) { // If the mouse was pressed down but didn't move then we have a control point
-            // Send control point to vertex shader
-            xpto.push(v_start);
+            // Send control point to vertex shader and make the curve move
+            controlPoints.push(v_start);
             console.log("Sending control points...");
         } else { // Else we have a free curve being drawn and v_finish is the last sampling point
             v_finish = get_pos_from_mouse_event(canvas, event);
-            xpto.push(get_pos_from_mouse_event(canvas, event));
+            controlPoints.push(get_pos_from_mouse_event(canvas, event));
             
             // 
 
             // Print the mouseup input position
-            console.log(`Mouse up at position: (${v_finish[0]}, ${v_finish[1]})`);
+            console.log("Mouse up at position: (${v_finish[0]}, ${v_finish[1]})");
         }
         mouseDown = false;
         moved = false;
     });
 
+    // Bind vertex buffer to 'position' (a_index) attribute in shader
+    gl.vertexAtribPointer(a_index, 1, gl.UNSIGNED_INT, false, 0, 0);
+    gl.enableVertexAttribArray(a_index);
+
     resize(window);
 
     gl.clearColor(0.0, 0.0, 0.0, 1);
-
-    // Enable Alpha blending
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
     window.requestAnimationFrame(animate);
 }
@@ -191,6 +204,7 @@ function setup(shaders) {
 let last_time;
 
 function animate(timestamp) {
+
     window.requestAnimationFrame(animate);
 
     if (last_time === undefined) {
@@ -199,20 +213,28 @@ function animate(timestamp) {
     // Elapsed time (in miliseconds) since last time here
     const elapsed = timestamp - last_time;
 
-    // Clear the framebuffer with the background color
+
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     gl.useProgram(draw_program);
 
-    gl.bindVertexArray(vao);
+    /**
+    for each curve {
+        for each control point pi {
+            get uniform location of pi
+            send uniform pi
+        }
+        get uniform location of segments
+        send uniform segments
+        bind vertex array
+        gl.drawArrays(gl.POINTS, 0, (N-3)*S + 1)
+        unbind vertex array
+    }
+    */
 
-    gl.drawArrays(gl.Points, 0, numPoints);
 
-    gl.useProgram(null);
 
     last_time = timestamp;
 }
-// Delay the animation so that the movement of the mouse draws dots spaced out
-setInterval(animate, 100);
 
 loadShadersFromURLS(["shader.vert", "shader.frag"]).then(shaders => setup(shaders))
