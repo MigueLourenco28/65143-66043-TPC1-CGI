@@ -14,7 +14,7 @@ var draw_program;
 // Saves the truth value of the curves being stationary 
 var paused = false;
 
-// Save the default amount of segments that a simple curve has
+// Save the default amount of segments that a simple curve (troço) has
 var nSegments = 6.0;
 
 // Save the default speed of the curve
@@ -24,7 +24,7 @@ var defSpeed = 2.0;
 const completeCurves = [];
 // Array that stores the control points of a curve
 var controlPoints = [];
-// Array that stores the points of a curve (sample points)
+// Array that stores the points of a curve : sample points (pontos amostrais)
 var curvePoints = [];
 // Task 7 : Array of indexes of the control points of a curve
 var xpto = new Uint32Array(BUFF_SIZE);
