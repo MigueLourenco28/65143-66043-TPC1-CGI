@@ -75,11 +75,6 @@ function setup(shaders) {
     const u_segments = gl.getUniformLocation(draw_program, "u_segments");
     gl.uniform1f(u_segments, nSegments); // send the number os segments to the shader
 
-    // Handle resize events 
-    window.addEventListener("resize", (event) => {
-        resize(event.target);
-    });
-
     function get_pos_from_mouse_event(canvas, event) {
         const rect = canvas.getBoundingClientRect();
         const x = (event.clientX - rect.left) / canvas.width * 2 - 1;
@@ -87,6 +82,11 @@ function setup(shaders) {
 
         return vec2(x, y);
     }
+
+    // Handle resize events 
+    window.addEventListener("resize", (event) => {
+        resize(event.target);
+    });
 
     // Command interpreter for every function available
     window.addEventListener("keydown", (event) => {
@@ -221,8 +221,13 @@ function animate(timestamp) {
                 // Receive the sample points
                 gl.uniform2fv(samplePoints, curvePoints[i][j]);
                 // TODO: Implement the curve movement
+                if (!paused) {
+                    // TODO: apply velocities to each point
+                }
             }
+            // Draw each line
             gl.drawArrays(gl.LINE_STRIP, 0, nSegments * (curvePoints[i].length - 3));
+            // Draw each point
             gl.drawArrays(gl.POINT, 0, nSegments * (curvePoints[i].length - 3));
         }
     }
