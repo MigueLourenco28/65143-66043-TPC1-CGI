@@ -5,9 +5,9 @@ const uint MAX_CONTROL_POINTS = 256u;
 // Task 5: Declare an array of uniforms of the type vec2 with capacity of MAX_CONTROL_POINTS
 uniform vec2 uControlPoints[MAX_CONTROL_POINTS];
 
-uniform uint u_segments; // Number os segments per simple curve
-uniform uint u_points; // Number of points 
-in uint a_index; // 
+uniform float u_segments; // Number os segments per simple curve
+uniform float u_points; // Number of points 
+in float a_index; // 
 
 // Calculate a simple B-Spline curve with 4 control points
 vec2 sample_point(vec2 p0, vec2 p1, vec2 p2, vec2 p3, float t) {

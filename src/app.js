@@ -29,7 +29,7 @@ var curveSpeeds = [];
 // Task 7 : Array of indexes of the control points of a curve
 var xpto = new Uint32Array(MAX_SIZE);
 // Task 7 : Initialize xpto
-for (var i = 0; i < MAX_SIZE; i++) {
+for (let i = 0; i < MAX_SIZE; i++) {
     xpto[i] = i;
 }
 
@@ -91,8 +91,9 @@ function setup(shaders) {
     window.addEventListener("keydown", (event) => {
         switch (event.key) {
             case "z":
-                // TODO: Implement the complete curve command: empty the controlPoints array
-                // 
+                curvePoints[currentCurve] = controlPoints;
+                currentCurve++;
+                controlPoints = [];
                 console.log("z key pressed");
                 break;
             case "c":
@@ -162,14 +163,10 @@ function setup(shaders) {
         if(mouseDown) {
             moved = true;
             controlPoints.push(get_pos_from_mouse_event(canvas, event));
-            currentCurve[currentCurve] = controlPoints; // Add control point to curve
-            // TODO: Handle the speeds of the current curve
-            console.log("Drawing free curve");
+            curvePoints[currentCurve] = controlPoints; // Add control point to curve
         }
     })
 
-    // Save the coordinates of the mouse up point
-    var v_finish;
     // Handle mouse up events
     window.addEventListener("mouseup", (event) => {
         if(mouseDown && moved) { // If the mouse was pressed down and moved its a free drawn curve
@@ -178,7 +175,7 @@ function setup(shaders) {
             // TODO: clear speeds
             currentCurve++; // advance to the next curve set to be drawn
         } else { // Else we have a control point
-            console.log("Control point: (${get_pos_from_mouse_event(canvas, event)[0]}, ${get_pos_from_mouse_event(canvas, event)[1]})");
+            console.log("Control point");
         }
         mouseDown = false;
         moved = false;
@@ -201,11 +198,15 @@ function animate(timestamp) {
 
     window.requestAnimationFrame(animate);
 
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
     if (last_time === undefined) {
         last_time = timestamp;
     }
     // Elapsed time (in miliseconds) since last time here
     const elapsed = timestamp - last_time;
+
+    gl.useProgram(draw_program);
 
     for (let i = 0; i < curvePoints.length; i++) { // Go through each curve
         if(curvePoints[i].length >= 4) { // We need 4 points on the curve to be able to draw a simple curve
@@ -234,10 +235,6 @@ function animate(timestamp) {
         unbind vertex array
     }
     */
-
-    gl.clear(gl.COLOR_BUFFER_BIT);
-
-    gl.useProgram(draw_program);
 
     last_time = timestamp;
 }
