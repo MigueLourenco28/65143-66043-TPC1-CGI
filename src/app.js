@@ -16,14 +16,15 @@ var paused = false;
 // Save the default amount of segments that a simple curve (troço) has
 var nSegments = 6.0;
 // Save the default speed of the curve
-var defSpeed = 0.01;
+var defSpeed = 0.1;
 // Save the index of the curve being drawn
 var currentCurve = 0;
 // Array that stores the control points of the current curve
 var controlPoints = [];
 // Matrix: Array that stores the array of points of each curve
 var curvePoints = [];
-// Matrix: Array that stores the array of speeds of each points of each curve
+// Matrix: Array that stores the array of speeds of each points of each 
+// curve in the corresponding index
 var curveSpeeds = [];
 
 // Task 7 : Array of indexes of the control points of a curve
@@ -98,7 +99,9 @@ function setup(shaders) {
                 break;
             case "c":
                 // TODO: Implement the clear command
-                xpto.length = 0;
+                curvePoints = [];
+                controlPoints = [];
+                currentCurve = 0;
                 console.log("c key pressed");
                 break;
             case "+":
@@ -170,9 +173,7 @@ function setup(shaders) {
     // Handle mouse up events
     window.addEventListener("mouseup", (event) => {
         if(mouseDown && moved) { // If the mouse was pressed down and moved its a free drawn curve
-            // TODO: atribute each point a different speed
             controlPoints = []; // Clear the control points of the current curve
-            // TODO: clear speeds
             currentCurve++; // advance to the next curve set to be drawn
         } else { // Else we have a control point
             console.log("Control point");
