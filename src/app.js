@@ -1,5 +1,5 @@
 import { buildProgramFromSources, loadShadersFromURLS, setupWebGL } from "../libs/utils.js";
-import { vec2 , flatten} from "../libs/MV.js";
+import { vec2 } from "../libs/MV.js";
 
 // Size of xpto
 const MAX_SIZE = 60000;
