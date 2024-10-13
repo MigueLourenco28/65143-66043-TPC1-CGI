@@ -184,7 +184,7 @@ function setup(shaders) {
             // 
 
             // Print the mouseup input position
-            console.log("Mouse up at position: (${v_finish[0]}, ${v_finish[1]})");
+            console.log(`Mouse up at position: (${v_finish[0]}, ${v_finish[1]})`);
         }
         mouseDown = false;
         moved = false;
