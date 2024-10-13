@@ -11,9 +11,9 @@ in float a_index; //
 
 // Calculate a simple B-Spline curve with 4 control points
 vec2 sample_point(vec2 p0, vec2 p1, vec2 p2, vec2 p3, float t) {
-    return (p0 * (-t * t * t + 3.0f * t * t - 3.0f * t + 1.0f) + // B0(t) = (−t3 + 3t2 −3t+ 1) / 6
-        p1 * (3.0f * t * t * t - 6.0f * t * t + 3.0f * t) + // B1(t) = (3t3 −6t2 + 4) / 6
-        p2 * (-3.0f * t * t * t + 3.0f * t * t) + // B2(t) = (−3t3 + 3t2 + 3t+ 1) / 6
+    return (p0 * (-t * t * t + 3.0 * t * t - 3.0 * t + 1.0) + // B0(t) = (−t3 + 3t2 −3t+ 1) / 6
+        p1 * (3.0 * t * t * t - 6.0 * t * t + 3.0 * t) + // B1(t) = (3t3 −6t2 + 4) / 6
+        p2 * (-3.0 * t * t * t + 3.0 * t * t) + // B2(t) = (−3t3 + 3t2 + 3t+ 1) / 6
         p3 * (t * t * t)) / 6.0; // B3(t) = t3 / 6
 }
 
