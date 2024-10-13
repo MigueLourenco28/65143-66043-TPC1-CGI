@@ -1,5 +1,5 @@
-import { buildProgramFromSources, loadShadersFromURLS, setupWebGL } from "../../libs/utils.js";
-import { vec2 , flatten} from "../../libs/MV.js";
+import { buildProgramFromSources, loadShadersFromURLS, setupWebGL } from "../libs/utils.js";
+import { vec2 , flatten} from "../libs/MV.js";
 
 // Size of xpto
 const BUFF_SIZE = 60000;
@@ -191,7 +191,7 @@ function setup(shaders) {
     });
 
     // Bind vertex buffer to 'position' (a_index) attribute in shader
-    gl.vertexAtribPointer(a_index, 1, gl.UNSIGNED_INT, false, 0, 0);
+    gl.vertexAttribPointer(a_index, 1, gl.UNSIGNED_INT, false, 0, 0);
     gl.enableVertexAttribArray(a_index);
 
     resize(window);
