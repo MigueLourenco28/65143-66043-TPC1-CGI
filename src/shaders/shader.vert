@@ -9,14 +9,14 @@ uniform uint u_segments; // Number os segments per simple curve
 uniform uint u_points; // Number of points 
 in uint a_index; // 
 
-// Calculate a Bezier with 4 control points
+// Calculate a simple B-Spline curve with 4 control points
 vec2 calculate_curve(vec2 p0, vec2 p1, vec2 p2, vec2 p3, float t) {
-    float t2 = t * t;
-    float t3 = t * t * t;
-    return (p0 * (-t3 + 3.0f * t2 - 3.0f * t + 1.0f) +
-        p1 * (3.0f * t3 - 6.0f * t2 + 3.0f * t) +
-        p2 * (-3.0f * t3 + 3.0f * t2) +
-        p3 * (t3));
+    float t2 = t * t; // t squared
+    float t3 = t * t * t; // t cubed
+    return (p0 * (-t3 + 3.0f * t2 - 3.0f * t + 1.0f) + // B0(t) = (−t3 + 3t2 −3t+ 1) / 6
+        p1 * (3.0f * t3 - 6.0f * t2 + 3.0f * t) + // B1(t) = (3t3 −6t2 + 4) / 6
+        p2 * (-3.0f * t3 + 3.0f * t2) + // B2(t) = (−3t3 + 3t2 + 3t+ 1) / 6
+        p3 * (t3)) / 6.0; // B3(t) = t3 / 6
 }
 
 void main() {
@@ -29,7 +29,7 @@ void main() {
     // a float to be able to calculate
     float t = float(index % int(u_segments)) / float(u_segments);
 
-    gl_PointSize = 5.0f;  // Size of the point
+    gl_PointSize = 2.0f;  // Size of the point
 
     // Get the next 4 control points to form the curve
     vec2 p0 = uControlPoints[troco];
@@ -38,6 +38,4 @@ void main() {
     vec2 p3 = uControlPoints[(troco + 3)];
 
     gl_Position = vec4(calculate_curve(p0, p1, p2, p3, t), 0, 1);
-    //gl_Position = vec4(controlPoints[a_idx % u_points], 0, 1);
-    //gl_PointSize = 1.0; // Define the size of the point
 }

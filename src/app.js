@@ -1,8 +1,8 @@
-import { buildProgramFromSources, loadShadersFromURLS, setupWebGL } from "../../libs/utils.js";
-import { vec2 , flatten} from "../../libs/MV.js";
+import { buildProgramFromSources, loadShadersFromURLS, setupWebGL } from "../libs/utils.js";
+import { vec2 , flatten} from "../libs/MV.js";
 
 // Size of xpto
-const BUFF_SIZE = 60000;
+const MAX_SIZE = 60000;
 
 
 var gl;
@@ -13,24 +13,23 @@ var draw_program;
 
 // Saves the truth value of the curves being stationary 
 var paused = false;
-
 // Save the default amount of segments that a simple curve (troço) has
 var nSegments = 6.0;
-
 // Save the default speed of the curve
-var defSpeed = 2.0;
-
-// Stores every curves that has been drawn
-const completeCurves = [];
-// Array that stores the control points of a curve
+var defSpeed = 0.01;
+// Save the index of the curve being drawn
+var currentCurve = 0;
+// Array that stores the control points of the current curve
 var controlPoints = [];
-// Array that stores the points of a curve : sample points (pontos amostrais)
+// Matrix: Array that stores the array of points of each curve
 var curvePoints = [];
-// Task 7 : Array of indexes of the control points of a curve
-var xpto = new Uint32Array(BUFF_SIZE);
+// Matrix: Array that stores the array of speeds of each points of each curve
+var curveSpeeds = [];
 
+// Task 7 : Array of indexes of the control points of a curve
+var xpto = new Uint32Array(MAX_SIZE);
 // Task 7 : Initialize xpto
-for (var i = 0; i < BUFF_SIZE; i++) {
+for (var i = 0; i < MAX_SIZE; i++) {
     xpto[i] = i;
 }
 
@@ -67,15 +66,18 @@ function setup(shaders) {
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Uint32Array(xpto), gl.STATIC_DRAW);
+    
+    // Get the attribute location for "a_index" attribute
+    const a_index = gl.getAttribLocation(draw_program, "a_index");
+    gl.useProgram(draw_program);
+    // Get the attribute location for "u_segments" attribute
+    const u_segments = gl.getUniformLocation(draw_program, "u_segments");
+    gl.uniform1f(u_segments, nSegments); // send the number os segments to the shader
 
     // Handle resize events 
     window.addEventListener("resize", (event) => {
         resize(event.target);
     });
-
-    // Get the attribute location for "a_index" attribute
-    const a_index = gl.getAttribLocation(draw_program, "a_index");
-    // Get the attribute location for "
 
     function get_pos_from_mouse_event(canvas, event) {
         const rect = canvas.getBoundingClientRect();
@@ -153,9 +155,8 @@ function setup(shaders) {
     // Task 4: Handle mouse down events
     window.addEventListener("mousedown", (event) => {
         mouseDown = true;
-        v_start = get_pos_from_mouse_event(canvas, event);
-        // Print the mouses input position
-        console.log(`Mouse down at position: (${v_start[0]}, ${v_start[1]})`);
+        controlPoints.push(get_pos_from_mouse_event(canvas, event));
+        curvePoints[currentCurve] = controlPoints; // Add control point to curve
     });
 
     // Handle mouse move events and prints if its triggered
@@ -163,35 +164,30 @@ function setup(shaders) {
         if(mouseDown) {
             moved = true;
             controlPoints.push(get_pos_from_mouse_event(canvas, event));
-            // Draw a free curve until mouseup event
-            console.log("Mouse moved");
+            currentCurve[currentCurve] = controlPoints; // Add control point to curve
+            // TODO: Handle the speeds of the current curve
+            console.log("Drawing free curve");
         }
-        // TODO: mark the coordinates of the point per frame that the mouse is in
-    });
+    })
 
     // Save the coordinates of the mouse up point
     var v_finish;
     // Handle mouse up events
     window.addEventListener("mouseup", (event) => {
-        if(mouseDown && !moved) { // If the mouse was pressed down but didn't move then we have a control point
-            // Send control point to vertex shader and make the curve move
-            controlPoints.push(v_start);
-            console.log("Sending control points...");
-        } else { // Else we have a free curve being drawn and v_finish is the last sampling point
-            v_finish = get_pos_from_mouse_event(canvas, event);
-            controlPoints.push(get_pos_from_mouse_event(canvas, event));
-            
-            // 
-
-            // Print the mouseup input position
-            console.log("Mouse up at position: (${v_finish[0]}, ${v_finish[1]})");
+        if(mouseDown && moved) { // If the mouse was pressed down and moved its a free drawn curve
+            // TODO: atribute each point a different speed
+            controlPoints = []; // Clear the control points of the current curve
+            // TODO: clear speeds
+            currentCurve++; // advance to the next curve set to be drawn
+        } else { // Else we have a control point
+            console.log("Control point: (${get_pos_from_mouse_event(canvas, event)[0]}, ${get_pos_from_mouse_event(canvas, event)[1]})");
         }
         mouseDown = false;
         moved = false;
-    });
+    })
 
-    // Bind vertex buffer to 'position' (a_index) attribute in shader
-    gl.vertexAtribPointer(a_index, 1, gl.UNSIGNED_INT, false, 0, 0);
+    // Bind vertex buffer to a_index attribute in shader.vert
+    gl.vertexAttribPointer(a_index, 1, gl.UNSIGNED_INT, false, 0, 0);
     gl.enableVertexAttribArray(a_index);
 
     resize(window);
@@ -213,10 +209,19 @@ function animate(timestamp) {
     // Elapsed time (in miliseconds) since last time here
     const elapsed = timestamp - last_time;
 
-
-    gl.clear(gl.COLOR_BUFFER_BIT);
-
-    gl.useProgram(draw_program);
+    for (let i = 0; i < curvePoints.length; i++) { // Go through each curve
+        if(curvePoints[i].length >= 4) { // We need 4 points on the curve to be able to draw a simple curve
+            for (let j = 0; j < curvePoints[i].length; j++) { // Go through each point on the curve
+                // Calculate the sample point with the control points inserted by sending to the vertex shader
+                let samplePoints = gl.getUniformLocation(draw_program, "uControlPoints[" + j + "]");
+                // Receive the sample points
+                gl.uniform2fv(samplePoints, curvePoints[i][j]);
+                // TODO: Implement the curve movement
+            }
+            gl.drawArrays(gl.LINE_STRIP, 0, segNum * Math.floor((curvePoints[i].length - 1) / 3));
+            gl.drawArrays(gl.POINT, 0, segNum * Math.floor((curvePoints[i].length - 1) / 3));
+        }
+    }
 
     /**
     for each curve {
@@ -232,7 +237,9 @@ function animate(timestamp) {
     }
     */
 
+    gl.clear(gl.COLOR_BUFFER_BIT);
 
+    gl.useProgram(draw_program);
 
     last_time = timestamp;
 }
