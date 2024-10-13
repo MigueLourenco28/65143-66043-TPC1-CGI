@@ -165,7 +165,7 @@ function setup(shaders) {
             controlPoints.push(get_pos_from_mouse_event(canvas, event));
             curvePoints[currentCurve] = controlPoints; // Add control point to curve
         }
-    })
+    });
 
     // Handle mouse up events
     window.addEventListener("mouseup", (event) => {
@@ -179,7 +179,7 @@ function setup(shaders) {
         }
         mouseDown = false;
         moved = false;
-    })
+    });
 
     // Bind vertex buffer to a_index attribute in shader.vert
     gl.vertexAttribPointer(a_index, 1, gl.UNSIGNED_INT, false, 0, 0);
@@ -188,6 +188,10 @@ function setup(shaders) {
     resize(window);
 
     gl.clearColor(0.0, 0.0, 0.0, 1);
+
+    // Enable Alpha blending
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
     window.requestAnimationFrame(animate);
 }
