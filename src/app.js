@@ -148,8 +148,6 @@ function setup(shaders) {
         }
     });
 
-    // Task 4: Save the coordinates of the mouse down point
-    var v_start;
     let mouseDown = false;
     let moved = false;
     // Task 4: Handle mouse down events
@@ -218,8 +216,8 @@ function animate(timestamp) {
                 gl.uniform2fv(samplePoints, curvePoints[i][j]);
                 // TODO: Implement the curve movement
             }
-            gl.drawArrays(gl.LINE_STRIP, 0, segNum * Math.floor((curvePoints[i].length - 1) / 3));
-            gl.drawArrays(gl.POINT, 0, segNum * Math.floor((curvePoints[i].length - 1) / 3));
+            gl.drawArrays(gl.LINE_STRIP, 0, nSegments * (curvePoints[i].length - 3));
+            gl.drawArrays(gl.POINT, 0, nSegments * (curvePoints[i].length - 3));
         }
     }
 
