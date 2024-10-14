@@ -100,7 +100,8 @@ function setup(shaders) {
             case "z":
                 curvePoints[currentCurve] = controlPoints;
                 // Initialize the speeds when z is pressed
-                curveSpeeds[currentCurve] = controlPoints.map(() => vec2(defSpeed, defSpeed));
+                let rand = Math.random()*0.01;
+                curveSpeeds[currentCurve] = controlPoints.map(() => vec2(defSpeed+rand, defSpeed+rand));
                 currentCurve++;
                 controlPoints = [];
                 console.log("z key pressed");
@@ -188,8 +189,9 @@ function setup(shaders) {
     // Handle mouse up events
     window.addEventListener("mouseup", (event) => {
         if(mouseDown && moved) { // If the mouse was pressed down and moved its a free drawn curve
+            let rand = Math.random()*0.01;
             // Initialize the speeds when the curve being drawn has finished
-            curveSpeeds[currentCurve] = curvePoints[currentCurve].map(() => vec2(defSpeed, defSpeed));
+            curveSpeeds[currentCurve] = curvePoints[currentCurve].map(() => vec2(defSpeed+rand, defSpeed+rand));
             controlPoints = []; // Clear the control points of the current curve
             currentCurve++; // advance to the next curve set to be drawn
         } else { // Else we have a control point
