@@ -33,7 +33,7 @@ void main() {
     vec2 cp2 = uControlPoints[(troco + 2)];
     vec2 cp3 = uControlPoints[(troco + 3)];
 
-    gl_PointSize = 3.0f;  // Size of the point
+    gl_PointSize = 6.0f;  // Size of the point
     // Return the resulting sample point
     gl_Position = vec4(sample_point(cp0, cp1, cp2, cp3, t), 0, 1);
 }
