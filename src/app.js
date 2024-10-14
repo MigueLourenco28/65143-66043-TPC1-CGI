@@ -21,6 +21,8 @@ var showCurves = true;
 var nSegments = 5.0;
 // Save the default speed of the curve
 var defSpeed = 0.01;
+// Adjustable speed additive to the default one
+var varSpeed = 0.001;
 // Save the index of the curve being drawn
 var currentCurve = 0;
 // Array that stores the control points of the current curve
@@ -129,10 +131,12 @@ function setup(shaders) {
             case ">":
                 // Implement speed up command
                 console.log("> key pressed");
+                varSpeed = Math.min(0.01, varSpeed+0.001);
                 break;
             case "<":
                 // Implement slow down command
                 console.log("< key pressed");
+                varSpeed = Math.max(0.0001, varSpeed-0.001);
                 break;
             case " ":
                 // Implement the pause/play command
@@ -238,8 +242,8 @@ function animate(timestamp) {
                     // Apply velocities to each point
                     for (let j = 0; j < curvePoints[i].length; j++) {
                         // Update the point with the corresponding speed
-                        curvePoints[i][j][0] += curveSpeeds[i][j][0] * elapsed * 0.001; // Update on x
-                        curvePoints[i][j][1] += curveSpeeds[i][j][1] * elapsed * 0.001; // Update on y
+                        curvePoints[i][j][0] += curveSpeeds[i][j][0] * elapsed * varSpeed; // Update on x
+                        curvePoints[i][j][1] += curveSpeeds[i][j][1] * elapsed * varSpeed; // Update on y
                 
                         // Checks when the point reaches the canvas border, inverting the speed
                         if (curvePoints[i][j][0] > 1 || curvePoints[i][j][0] < -1) {
