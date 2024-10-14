@@ -13,10 +13,14 @@ var draw_program;
 
 // Saves the truth value of the curves being stationary 
 var paused = false;
+// Saves the truth value of the points being shown 
+var showPoints = true;
+// Saves the truth value of the curves being shown
+var showCurves = true;
 // Save the default amount of segments that a simple curve (troço) has
-var nSegments = 6.0;
+var nSegments = 5.0;
 // Save the default speed of the curve
-var defSpeed = 0.1;
+var defSpeed = 0.01;
 // Save the index of the curve being drawn
 var currentCurve = 0;
 // Array that stores the control points of the current curve
@@ -93,41 +97,45 @@ function setup(shaders) {
         switch (event.key) {
             case "z":
                 curvePoints[currentCurve] = controlPoints;
+                // Initialize the speeds when z is pressed
+                curveSpeeds[currentCurve] = controlPoints.map(() => vec2(defSpeed, defSpeed));
                 currentCurve++;
                 controlPoints = [];
                 console.log("z key pressed");
                 break;
             case "c":
-                // TODO: Implement the clear command
+                // Implement the clear command
                 curvePoints = [];
                 controlPoints = [];
                 currentCurve = 0;
                 console.log("c key pressed");
                 break;
             case "+":
-                // TODO: Implement the increase segments command
+                // Implement the increase segments command
                 if (nSegments < 100)    
                     nSegments++;
+                gl.uniform1fv(u_segments, nSegments);
                 console.log(nSegments + " segments");
                 console.log("+ key pressed");
                 break;
             case "-":
-                // TODO: Implement the lower segments command
+                // Implement the lower segments command
                 if(nSegments > 1)
                     nSegments--;
-                console.log(nSegments + " segments")
+                gl.uniform1fv(u_segments, nSegments);
+                console.log(nSegments + " segments");
                 console.log("- key pressed");
                 break;
             case ">":
-                // TODO: Implement speed up command
+                // Implement speed up command
                 console.log("> key pressed");
                 break;
             case "<":
-                // TODO: Implement slow down command
+                // Implement slow down command
                 console.log("< key pressed");
                 break;
             case " ":
-                // TODO: Implement the pause/play command
+                // Implement the pause/play command
                 if(paused)
                     paused = false;
                 else
@@ -135,17 +143,20 @@ function setup(shaders) {
                 console.log("space key pressed");
                 break;
             case "p":
-                // TODO: Implement the show/hide control points command
+                // Implement the show/hide control points command
+                if(showPoints)    
+                    showPoints = false;
+                else
+                    showPoints = true;
                 console.log("p key pressed");
                 break;
             case "l":
-                // TODO: Implement the show/hide curves command
+                // Implement the show/hide curves command
+                if(showCurves)    
+                    showCurves = false;
+                else
+                    showCurves = true;
                 console.log("l key pressed");
-                break;
-            // TODO: Implement the curve modes
-            case "x":
-                //TODO: Implement the bonus command zombie mode
-                console.log("x key pressed");
                 break;
             default:
                 break;
@@ -173,6 +184,8 @@ function setup(shaders) {
     // Handle mouse up events
     window.addEventListener("mouseup", (event) => {
         if(mouseDown && moved) { // If the mouse was pressed down and moved its a free drawn curve
+            // Initialize the speeds when the curve being drawn has finished
+            curveSpeeds[currentCurve] = curvePoints[currentCurve].map(() => vec2(defSpeed, defSpeed));
             controlPoints = []; // Clear the control points of the current curve
             currentCurve++; // advance to the next curve set to be drawn
         } else { // Else we have a control point
@@ -220,31 +233,32 @@ function animate(timestamp) {
                 let samplePoints = gl.getUniformLocation(draw_program, "uControlPoints[" + j + "]");
                 // Receive the sample points
                 gl.uniform2fv(samplePoints, curvePoints[i][j]);
-                // TODO: Implement the curve movement
-                if (!paused) {
-                    // TODO: apply velocities to each point
+                // Implement the curve movement
+                if (!paused && curveSpeeds[i]) { // Check if it's paused and if the speeds have been initialized
+                    // Apply velocities to each point
+                    for (let j = 0; j < curvePoints[i].length; j++) {
+                        // Update the point with the corresponding speed
+                        curvePoints[i][j][0] += curveSpeeds[i][j][0] * elapsed * 0.001; // Update on x
+                        curvePoints[i][j][1] += curveSpeeds[i][j][1] * elapsed * 0.001; // Update on y
+                
+                        // Checks when the point reaches the canvas border, inverting the speed
+                        if (curvePoints[i][j][0] > 1 || curvePoints[i][j][0] < -1) {
+                            curveSpeeds[i][j][0] *= -1; // Invert the direction on x
+                        }
+                        if (curvePoints[i][j][1] > 1 || curvePoints[i][j][1] < -1) {
+                            curveSpeeds[i][j][1] *= -1; // Invert the direction on y
+                        }
+                    }
                 }
             }
-            // Draw each line
-            gl.drawArrays(gl.LINE_STRIP, 0, nSegments * (curvePoints[i].length - 3));
-            // Draw each point
-            gl.drawArrays(gl.POINT, 0, nSegments * (curvePoints[i].length - 3));
+            if(showCurves) 
+                // Draw each line
+                gl.drawArrays(gl.LINE_STRIP, 0, nSegments * (curvePoints[i].length - 3));
+            if(showPoints)    
+                // Draw each point
+                gl.drawArrays(gl.POINT, 0, nSegments * (curvePoints[i].length - 3));
         }
     }
-
-    /**
-    for each curve {
-        for each control point pi {
-            get uniform location of pi
-            send uniform pi
-        }
-        get uniform location of segments
-        send uniform segments
-        bind vertex array
-        gl.drawArrays(gl.POINTS, 0, (N-3)*S + 1)
-        unbind vertex array
-    }
-    */
 
     last_time = timestamp;
 }

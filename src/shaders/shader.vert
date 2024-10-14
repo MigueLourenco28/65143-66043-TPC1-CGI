@@ -25,7 +25,7 @@ void main() {
 
     // Since vec2 is a pair of floats, every value from now on has to be
     // a float to be able to calculate
-    float t = float(index % int(u_segments)) / float(u_segments);
+    float t = float(index % int(u_segments)) / u_segments;
 
     // Get the next 4 control points to form the curve
     vec2 cp0 = uControlPoints[troco];
