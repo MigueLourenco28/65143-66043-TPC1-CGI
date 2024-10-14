@@ -6,7 +6,6 @@ const uint MAX_CONTROL_POINTS = 256u;
 uniform vec2 uControlPoints[MAX_CONTROL_POINTS];
 
 uniform float u_segments; // Number os segments per simple curve
-uniform float u_points; // Number of points 
 in float a_index; // 
 
 // Calculate a simple B-Spline curve with 4 control points
