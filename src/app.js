@@ -230,9 +230,9 @@ function animate(timestamp) {
         if(curvePoints[i].length >= 4) { // We need 4 points on the curve to be able to draw a simple curve
             for (let j = 0; j < curvePoints[i].length; j++) { // Go through each point on the curve
                 // Calculate the sample point with the control points inserted by sending to the vertex shader
-                let samplePoints = gl.getUniformLocation(draw_program, "uControlPoints[" + j + "]");
-                // Receive the sample points
-                gl.uniform2fv(samplePoints, curvePoints[i][j]);
+                let samplePoint = gl.getUniformLocation(draw_program, "uControlPoints[" + j + "]");
+                // Receive the sample point
+                gl.uniform2fv(samplePoint, curvePoints[i][j]);
                 // Implement the curve movement
                 if (!paused && curveSpeeds[i]) { // Check if it's paused and if the speeds have been initialized
                     // Apply velocities to each point
