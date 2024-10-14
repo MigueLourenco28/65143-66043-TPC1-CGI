@@ -6,14 +6,14 @@ const uint MAX_CONTROL_POINTS = 256u;
 uniform vec2 uControlPoints[MAX_CONTROL_POINTS];
 
 uniform float u_segments; // Number os segments per simple curve
-in float a_index; // 
+in float a_index; // current index
 
 // Calculate a simple B-Spline curve with 4 control points
-vec2 sample_point(vec2 p0, vec2 p1, vec2 p2, vec2 p3, float t) {
-    return (p0 * (-t * t * t + 3.0 * t * t - 3.0 * t + 1.0) + // B0(t) = (−t3 + 3t2 −3t+ 1) / 6
-        p1 * (3.0 * t * t * t - 6.0 * t * t + 4.0) + // B1(t) = (3t3 −6t2 + 4) / 6
-        p2 * (-3.0 * t * t * t + 3.0 * t * t + 3.0 * t +1.0) + // B2(t) = (−3t3 + 3t2 + 3t+ 1) / 6
-        p3 * (t * t * t)) / 6.0; // B3(t) = t3 / 6
+vec2 sample_point(vec2 cp0, vec2 cp1, vec2 cp2, vec2 cp3, float t) {
+    return (cp0 * (-t * t * t + 3.0 * t * t - 3.0 * t + 1.0) + // B0(t) = (−t3 + 3t2 −3t+ 1) / 6
+        cp1 * (3.0 * t * t * t - 6.0 * t * t + 4.0) + // B1(t) = (3t3 −6t2 + 4) / 6
+        cp2 * (-3.0 * t * t * t + 3.0 * t * t + 3.0 * t +1.0) + // B2(t) = (−3t3 + 3t2 + 3t+ 1) / 6
+        cp3 * (t * t * t)) / 6.0; // B3(t) = t3 / 6
 }
 
 void main() {
