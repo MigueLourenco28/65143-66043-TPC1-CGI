@@ -132,12 +132,12 @@ function setup(shaders) {
             case ">":
                 // Implement speed up command
                 console.log("> key pressed");
-                varSpeed = Math.min(0.01, varSpeed+0.001);
+                varSpeed = Math.min(0.002, varSpeed+0.0001);
                 break;
             case "<":
                 // Implement slow down command
                 console.log("< key pressed");
-                varSpeed = Math.max(0.0001, varSpeed-0.001);
+                varSpeed = Math.max(0.0001, varSpeed-0.0001);
                 break;
             case " ":
                 // Implement the pause/play command
